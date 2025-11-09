@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: treasury-app-env
+  namespace: treasury
+type: Opaque
+stringData:
+  TREASURY_APP_ENV: "Production"
+  TREASURY_HTTP_PORT: "4001"
+  TREASURY_POSTGRES_URL: "postgres://postgres:postgres@postgresql.treasury.svc.cluster.local:5432/treasury?sslmode=disable"
+  TREASURY_REDIS_ADDR: "redis-master.treasury.svc.cluster.local:6380"
+  TREASURY_NATS_URL: "nats://nats.messaging.svc.cluster.local:4222"
+  TREASURY_STORAGE_PROVIDER: "minio"
+  TREASURY_STORAGE_ENDPOINT: "http://minio.storage.svc.cluster.local:9000"
+  TREASURY_STORAGE_BUCKET: "treasury-artifacts"
+  TREASURY_OTLP_ENDPOINT: "http://otel-collector.monitoring.svc.cluster.local:4317"

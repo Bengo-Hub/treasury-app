@@ -1,0 +1,52 @@
+package router
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"go.uber.org/zap"
+
+	handlers "github.com/bengobox/treasury-app/internal/http/handlers"
+	sharedmw "github.com/bengobox/treasury-app/internal/shared/middleware"
+)
+
+func New(log *zap.Logger, health *handlers.Health, ledger *handlers.Ledger, payments *handlers.Payments) http.Handler {
+	r := chi.NewRouter()
+
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(sharedmw.RequestID)
+	r.Use(sharedmw.Tenant)
+	r.Use(sharedmw.Logging(log))
+	r.Use(sharedmw.Recover(log))
+	r.Use(middleware.Timeout(30 * time.Second))
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Tenant-ID", "X-Request-ID"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
+	r.Get("/healthz", health.Liveness)
+	r.Get("/readyz", health.Readiness)
+	r.Get("/metrics", health.Metrics)
+
+	r.Route("/v1", func(api chi.Router) {
+		api.Route("/{tenantID}", func(tenant chi.Router) {
+			tenant.Route("/ledger", func(ledgerRouter chi.Router) {
+				ledgerRouter.Get("/chart-of-accounts", ledger.ChartOfAccounts)
+			})
+
+			tenant.Route("/payments", func(paymentsRouter chi.Router) {
+				paymentsRouter.Get("/intents", payments.Intents)
+			})
+		})
+	})
+
+	return r
+}
