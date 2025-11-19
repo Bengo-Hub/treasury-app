@@ -29,7 +29,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.livenessResponse"
+                            "$ref": "#/definitions/internal_http_handlers.livenessResponse"
                         }
                     }
                 }
@@ -69,20 +69,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.readinessResponse"
+                            "$ref": "#/definitions/internal_http_handlers.readinessResponse"
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/handlers.readinessResponse"
+                            "$ref": "#/definitions/internal_http_handlers.readinessResponse"
                         }
                     }
                 }
             }
         },
-        "/v1/{tenantID}/ledger/chart-of-accounts": {
+        "/{tenantID}/ledger/chart-of-accounts": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Returns the ledger chart of accounts for the requesting tenant.",
                 "produces": [
                     "application/json"
@@ -104,14 +109,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.chartOfAccountsResponse"
+                            "$ref": "#/definitions/internal_http_handlers.chartOfAccountsResponse"
                         }
                     }
                 }
             }
         },
-        "/v1/{tenantID}/payments/intents": {
+        "/{tenantID}/payments/intents": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Returns the payment intents that have been created for the tenant.",
                 "produces": [
                     "application/json"
@@ -133,7 +143,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.paymentIntentsResponse"
+                            "$ref": "#/definitions/internal_http_handlers.paymentIntentsResponse"
                         }
                     }
                 }
@@ -141,18 +151,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.chartOfAccountsResponse": {
+        "internal_http_handlers.chartOfAccountsResponse": {
             "type": "object",
             "properties": {
                 "accounts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.ledgerAccount"
+                        "$ref": "#/definitions/internal_http_handlers.ledgerAccount"
                     }
                 }
             }
         },
-        "handlers.ledgerAccount": {
+        "internal_http_handlers.ledgerAccount": {
             "type": "object",
             "properties": {
                 "allowPostings": {
@@ -185,7 +195,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.livenessResponse": {
+        "internal_http_handlers.livenessResponse": {
             "type": "object",
             "properties": {
                 "service": {
@@ -198,7 +208,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.paymentIntent": {
+        "internal_http_handlers.paymentIntent": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -219,18 +229,18 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.paymentIntentsResponse": {
+        "internal_http_handlers.paymentIntentsResponse": {
             "type": "object",
             "properties": {
                 "intents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.paymentIntent"
+                        "$ref": "#/definitions/internal_http_handlers.paymentIntent"
                     }
                 }
             }
         },
-        "handlers.readinessResponse": {
+        "internal_http_handlers.readinessResponse": {
             "type": "object",
             "properties": {
                 "dependencies": {
@@ -245,6 +255,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "bearerAuth": {
+            "description": "JWT token from auth-service. Format: Bearer {token}",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -252,8 +270,8 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1.0",
 	Host:             "",
-	BasePath:         "/",
-	Schemes:          []string{"http"},
+	BasePath:         "/api/v1",
+	Schemes:          []string{"http", "https"},
 	Title:            "Treasury Service API",
 	Description:      "HTTP API for the BengoBox treasury service.",
 	InfoInstanceName: "swagger",

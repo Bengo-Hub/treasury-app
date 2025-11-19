@@ -1,16 +1,13 @@
-schemes:
-  - http
-  - https
-basePath: /
+basePath: /api/v1
 definitions:
-  handlers.chartOfAccountsResponse:
+  internal_http_handlers.chartOfAccountsResponse:
     properties:
       accounts:
         items:
-          $ref: '#/definitions/handlers.ledgerAccount'
+          $ref: '#/definitions/internal_http_handlers.ledgerAccount'
         type: array
     type: object
-  handlers.ledgerAccount:
+  internal_http_handlers.ledgerAccount:
     properties:
       allowPostings:
         example: true
@@ -34,7 +31,7 @@ definitions:
         example: asset
         type: string
     type: object
-  handlers.livenessResponse:
+  internal_http_handlers.livenessResponse:
     properties:
       service:
         example: treasury-app
@@ -43,7 +40,7 @@ definitions:
         example: ok
         type: string
     type: object
-  handlers.paymentIntent:
+  internal_http_handlers.paymentIntent:
     properties:
       amount:
         example: "0.00"
@@ -58,14 +55,14 @@ definitions:
         example: pending
         type: string
     type: object
-  handlers.paymentIntentsResponse:
+  internal_http_handlers.paymentIntentsResponse:
     properties:
       intents:
         items:
-          $ref: '#/definitions/handlers.paymentIntent'
+          $ref: '#/definitions/internal_http_handlers.paymentIntent'
         type: array
     type: object
-  handlers.readinessResponse:
+  internal_http_handlers.readinessResponse:
     properties:
       dependencies:
         additionalProperties:
@@ -77,14 +74,52 @@ definitions:
     type: object
 info:
   contact: {}
-  description: |
-    HTTP API for the BengoBox treasury service.
-    
-    **Authentication**: All protected endpoints require a Bearer token from auth-service.
-    Include the token in the Authorization header: `Authorization: Bearer {token}`
+  description: HTTP API for the BengoBox treasury service.
   title: Treasury Service API
   version: 0.1.0
 paths:
+  /{tenantID}/ledger/chart-of-accounts:
+    get:
+      description: Returns the ledger chart of accounts for the requesting tenant.
+      parameters:
+      - description: Tenant identifier
+        in: path
+        name: tenantID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_http_handlers.chartOfAccountsResponse'
+      security:
+      - bearerAuth: []
+      summary: List chart of accounts
+      tags:
+      - Ledger
+  /{tenantID}/payments/intents:
+    get:
+      description: Returns the payment intents that have been created for the tenant.
+      parameters:
+      - description: Tenant identifier
+        in: path
+        name: tenantID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_http_handlers.paymentIntentsResponse'
+      security:
+      - bearerAuth: []
+      summary: List payment intents
+      tags:
+      - Payments
   /healthz:
     get:
       description: Returns OK when the treasury API process is running.
@@ -94,7 +129,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.livenessResponse'
+            $ref: '#/definitions/internal_http_handlers.livenessResponse'
       summary: Service liveness probe
       tags:
       - Health
@@ -120,68 +155,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.readinessResponse'
+            $ref: '#/definitions/internal_http_handlers.readinessResponse'
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/handlers.readinessResponse'
+            $ref: '#/definitions/internal_http_handlers.readinessResponse'
       summary: Readiness probe
       tags:
       - Health
-  /v1/{tenantID}/ledger/chart-of-accounts:
-    get:
-      description: Returns the ledger chart of accounts for the requesting tenant.
-      parameters:
-      - description: Tenant identifier
-        in: path
-        name: tenantID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.chartOfAccountsResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - bearerAuth: []
-      summary: List chart of accounts
-      tags:
-      - Ledger
-  /v1/{tenantID}/payments/intents:
-    get:
-      description: Returns the payment intents that have been created for the tenant.
-      parameters:
-      - description: Tenant identifier
-        in: path
-        name: tenantID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.paymentIntentsResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - bearerAuth: []
-      summary: List payment intents
-      tags:
-      - Payments
+schemes:
+- http
+- https
 securityDefinitions:
   bearerAuth:
-    type: apiKey
-    name: Authorization
+    description: 'JWT token from auth-service. Format: Bearer {token}'
     in: header
-    description: "JWT token from auth-service. Format: Bearer {token}"
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

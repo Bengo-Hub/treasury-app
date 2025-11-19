@@ -37,6 +37,7 @@ type chartOfAccountsResponse struct {
 // @Produce json
 // @Param tenantID path string true "Tenant identifier"
 // @Success 200 {object} chartOfAccountsResponse
+// @Security bearerAuth
 // @Router /{tenantID}/ledger/chart-of-accounts [get]
 func (h *Ledger) ChartOfAccounts(w http.ResponseWriter, r *http.Request) {
 	account := ledgerAccount{

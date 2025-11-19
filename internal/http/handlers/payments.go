@@ -25,6 +25,7 @@ type paymentIntentsResponse struct {
 // @Produce json
 // @Param tenantID path string true "Tenant identifier"
 // @Success 200 {object} paymentIntentsResponse
+// @Security bearerAuth
 // @Router /{tenantID}/payments/intents [get]
 func (h *Payments) Intents(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, paymentIntentsResponse{
