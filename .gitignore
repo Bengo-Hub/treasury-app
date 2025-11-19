@@ -4,6 +4,7 @@ cmd/api/api
 cmd/worker/worker
 coverage/
 dist/
+*.exe
 
 # Go
 *.test
