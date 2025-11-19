@@ -18,6 +18,14 @@ make tidy
 make run
 ```
 
+### API Documentation
+
+- Swagger UI: http://localhost:4001/swagger/index.html
+- Regenerate the OpenAPI spec after updating handler annotations:
+  ```bash
+  swag init -g cmd/api/main.go -o internal/http/docs
+  ```
+
 Port mapping:
 
 - Local development defaults to **http://localhost:4001**.

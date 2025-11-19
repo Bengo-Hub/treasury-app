@@ -10,6 +10,8 @@ RUN CGO_ENABLED=0 go build -o /out/treasury ./cmd/api
 FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /out/treasury /app/service
+# TLS certificates directory (optional, can be mounted as volume)
+# Note: distroless doesn't support RUN, so certs must be mounted as volume
 USER nonroot:nonroot
 EXPOSE 4001
 ENV PORT=4001

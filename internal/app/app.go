@@ -21,6 +21,7 @@ import (
 	"github.com/bengobox/treasury-app/internal/platform/secrets"
 	"github.com/bengobox/treasury-app/internal/platform/storage"
 	"github.com/bengobox/treasury-app/internal/shared/logger"
+	authclient "github.com/Bengo-Hub/shared-auth-client"
 )
 
 type App struct {
@@ -65,11 +66,28 @@ func New(ctx context.Context) (*App, error) {
 	storageHealth := storage.NewHealthChecker(cfg.Storage)
 	secretsProvider := secrets.NewNoop()
 
+	// Initialize auth-service JWT validator
+	var authMiddleware *authclient.AuthMiddleware
+	if cfg.Auth.JWKSUrl != "" {
+		authConfig := authclient.DefaultConfig(
+			cfg.Auth.JWKSUrl,
+			cfg.Auth.Issuer,
+			cfg.Auth.Audience,
+		)
+		authConfig.CacheTTL = cfg.Auth.JWKSCacheTTL
+		authConfig.RefreshInterval = cfg.Auth.JWKSRefreshInterval
+		validator, err := authclient.NewValidator(authConfig)
+		if err != nil {
+			return nil, fmt.Errorf("auth validator init: %w", err)
+		}
+		authMiddleware = authclient.NewAuthMiddleware(validator)
+	}
+
 	healthHandler := handlers.NewHealth(log, dbPool, redisClient, natsConn, storageHealth)
 	ledgerHandler := handlers.NewLedger(log)
 	paymentsHandler := handlers.NewPayments()
 
-	httpRouter := router.New(log, healthHandler, ledgerHandler, paymentsHandler)
+	httpRouter := router.New(log, healthHandler, ledgerHandler, paymentsHandler, authMiddleware)
 
 	httpServer := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port),
@@ -92,12 +110,22 @@ func New(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run(ctx context.Context) error {
-	a.log.Info("treasury http server starting", zap.String("addr", a.httpServer.Addr))
-
 	errCh := make(chan error, 1)
-	go func() {
-		errCh <- a.httpServer.ListenAndServe()
-	}()
+	if a.cfg.HTTP.TLSCertFile != "" && a.cfg.HTTP.TLSKeyFile != "" {
+		a.log.Info("treasury http server starting with HTTPS",
+			zap.String("addr", a.httpServer.Addr),
+			zap.String("cert", a.cfg.HTTP.TLSCertFile),
+			zap.String("key", a.cfg.HTTP.TLSKeyFile),
+		)
+		go func() {
+			errCh <- a.httpServer.ListenAndServeTLS(a.cfg.HTTP.TLSCertFile, a.cfg.HTTP.TLSKeyFile)
+		}()
+	} else {
+		a.log.Info("treasury http server starting with HTTP", zap.String("addr", a.httpServer.Addr))
+		go func() {
+			errCh <- a.httpServer.ListenAndServe()
+		}()
+	}
 
 	select {
 	case <-ctx.Done():

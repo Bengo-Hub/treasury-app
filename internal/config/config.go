@@ -21,6 +21,7 @@ type Config struct {
 	Storage   StorageConfig
 	Secrets   SecretsConfig
 	Telemetry TelemetryConfig
+	Auth      AuthConfig
 }
 
 type AppConfig struct {
@@ -36,6 +37,8 @@ type HTTPConfig struct {
 	ReadTimeout  time.Duration `envconfig:"HTTP_READ_TIMEOUT" default:"20s"`
 	WriteTimeout time.Duration `envconfig:"HTTP_WRITE_TIMEOUT" default:"20s"`
 	IdleTimeout  time.Duration `envconfig:"HTTP_IDLE_TIMEOUT" default:"90s"`
+	TLSCertFile  string        `envconfig:"TLS_CERT_FILE"`
+	TLSKeyFile   string        `envconfig:"TLS_KEY_FILE"`
 }
 
 type GRPCConfig struct {
@@ -90,6 +93,16 @@ type TelemetryConfig struct {
 	OTLPEndpoint string `envconfig:"OTLP_ENDPOINT"`
 	MetricsURL   string `envconfig:"METRICS_ENDPOINT"`
 	TracingURL   string `envconfig:"TRACING_ENDPOINT"`
+}
+
+type AuthConfig struct {
+	// Auth Service SSO (JWT) integration
+	ServiceURL         string        `envconfig:"AUTH_SERVICE_URL" default:"https://auth.codevertex.local:4101"`
+	Issuer             string        `envconfig:"AUTH_ISSUER" default:"https://auth.codevertex.local:4101"`
+	Audience           string        `envconfig:"AUTH_AUDIENCE" default:"bengobox"`
+	JWKSUrl            string        `envconfig:"AUTH_JWKS_URL" default:"https://auth.codevertex.local:4101/api/v1/.well-known/jwks.json"`
+	JWKSCacheTTL       time.Duration `envconfig:"AUTH_JWKS_CACHE_TTL" default:"3600s"`
+	JWKSRefreshInterval time.Duration `envconfig:"AUTH_JWKS_REFRESH_INTERVAL" default:"300s"`
 }
 
 // Load gathers configuration from environment variables and optional .env files.

@@ -6,9 +6,20 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/bengobox/treasury-app/internal/http/docs"
+
 	"github.com/bengobox/treasury-app/internal/app"
 )
 
+// @title Treasury Service API
+// @version 0.1.0
+// @description HTTP API for the BengoBox treasury service.
+// @BasePath /api/v1
+// @schemes http https
+// @securityDefinitions.apikey bearerAuth
+// @in header
+// @name Authorization
+// @description JWT token from auth-service. Format: Bearer {token}
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
