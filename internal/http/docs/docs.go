@@ -200,7 +200,7 @@ const docTemplate = `{
             "properties": {
                 "service": {
                     "type": "string",
-                    "example": "treasury-app"
+                    "example": "treasury-api"
                 },
                 "status": {
                     "type": "string",

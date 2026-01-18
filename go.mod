@@ -1,12 +1,14 @@
-module github.com/bengobox/treasury-app
+module github.com/bengobox/treasury-api
 
 go 1.24.0
 
-// Local development: replace with local path (remove when repo is created and tagged)
-replace github.com/Bengo-Hub/shared-auth-client => ../shared/auth-client
+// Map module path to correct GitHub repository
+replace github.com/Bengo-Hub/shared-auth-client => github.com/Bengo-Hub/auth-client v0.2.0
+
+replace github.com/Bengo-Hub/shared-service-client => github.com/Bengo-Hub/shared-service-client v0.1.0
 
 require (
-	github.com/Bengo-Hub/shared-auth-client v0.1.0
+	github.com/Bengo-Hub/shared-auth-client v0.2.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/google/uuid v1.6.0
@@ -15,11 +17,10 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/nats-io/nats.go v1.33.1
 	github.com/prometheus/client_golang v1.23.2
-	github.com/redis/go-redis/v9 v9.5.1
+	github.com/redis/go-redis/v9 v9.17.2
 	github.com/shopspring/decimal v1.4.0
-	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.6
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 )
 
 require (
@@ -64,7 +65,6 @@ require (
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.54.0 // indirect
-	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.0 // indirect
 	go.uber.org/mock v0.5.0 // indirect

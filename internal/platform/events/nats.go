@@ -7,12 +7,12 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"github.com/bengobox/treasury-app/internal/config"
+	"github.com/bengobox/treasury-api/internal/config"
 )
 
 func Connect(cfg config.EventsConfig) (*nats.Conn, error) {
 	opts := []nats.Option{
-		nats.Name("treasury-app"),
+		nats.Name("treasury-api"),
 		nats.Timeout(5 * time.Second),
 		nats.ReconnectWait(2 * time.Second),
 		nats.MaxReconnects(-1),

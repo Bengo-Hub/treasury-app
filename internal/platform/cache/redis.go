@@ -5,7 +5,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/bengobox/treasury-app/internal/config"
+	"github.com/bengobox/treasury-api/internal/config"
 )
 
 func NewClient(cfg config.RedisConfig) *redis.Client {

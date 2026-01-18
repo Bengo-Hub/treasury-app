@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bengobox/treasury-app/internal/config"
+	"github.com/bengobox/treasury-api/internal/config"
 )
 
 type HealthChecker struct {

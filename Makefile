@@ -1,4 +1,4 @@
-APP := treasury-app
+APP := treasury-api
 
 .PHONY: run worker test lint tidy build proto
 

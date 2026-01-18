@@ -34,7 +34,7 @@ func NewHealth(log *zap.Logger, db dbPinger, cache *redis.Client, events *nats.C
 
 type livenessResponse struct {
 	Status  string `json:"status" example:"ok"`
-	Service string `json:"service" example:"treasury-app"`
+	Service string `json:"service" example:"treasury-api"`
 }
 
 type readinessResponse struct {
@@ -52,7 +52,7 @@ type readinessResponse struct {
 func (h *Health) Liveness(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, livenessResponse{
 		Status:  "ok",
-		Service: "treasury-app",
+		Service: "treasury-api",
 	})
 }
 

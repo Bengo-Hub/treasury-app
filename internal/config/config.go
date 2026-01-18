@@ -25,7 +25,7 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Name    string `envconfig:"APP_NAME" default:"treasury-app"`
+	Name    string `envconfig:"APP_NAME" default:"treasury-api"`
 	Env     string `envconfig:"APP_ENV" default:"development"`
 	Region  string `envconfig:"APP_REGION" default:"africa-east-1"`
 	Version string `envconfig:"APP_VERSION" default:"0.1.0"`

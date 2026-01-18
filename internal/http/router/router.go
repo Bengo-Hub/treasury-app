@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/cors"
 	"go.uber.org/zap"
 
-	handlers "github.com/bengobox/treasury-app/internal/http/handlers"
-	sharedmw "github.com/bengobox/treasury-app/internal/shared/middleware"
+	handlers "github.com/bengobox/treasury-api/internal/http/handlers"
+	sharedmw "github.com/bengobox/treasury-api/internal/shared/middleware"
 	authclient "github.com/Bengo-Hub/shared-auth-client"
 )
 

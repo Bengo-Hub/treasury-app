@@ -6,9 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "github.com/bengobox/treasury-app/internal/http/docs"
+	_ "github.com/bengobox/treasury-api/internal/http/docs"
 
-	"github.com/bengobox/treasury-app/internal/app"
+	"github.com/bengobox/treasury-api/internal/app"
 )
 
 // @title Treasury Service API
